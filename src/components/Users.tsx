@@ -5,6 +5,7 @@ import { getUsers, removeuser } from 'utils/user'
 import { getUserInfo } from 'utils/userApis'
 import Profile from './Profile'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 const getAllUsersInfos = async () => {
   const users = getUsers()
@@ -15,7 +16,8 @@ const getAllUsersInfos = async () => {
         return user
       } catch (error) {
         // throw error
-        console.error('[ERROR_USERINFO]', error)
+        toast.error(`${_user.email} ${error}`)
+        // console.error('[ERROR_USERINFO]', error)
       }
     })
   )
