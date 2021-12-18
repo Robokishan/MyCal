@@ -1,13 +1,30 @@
 import { buildUrl } from 'build-url-ts'
 import Avatar from 'components/Avatar'
 import { useEffect, useState } from 'react'
+import { useQuery } from 'react-query'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { getCalenderEvents } from 'utils/calendar'
 import { getUsers } from 'utils/user'
 
-function App() {
-  const [events, setevents] = useState<any[]>([])
+const getAllUsersEvent = async () => {
+  const users = getUsers()
+  const events = await Promise.all(
+    users.map(async (user) => {
+      try {
+        const event = await getCalenderEvents(user)
+        console.log('event', user.email, event)
+        return event
+      } catch (error) {
+        throw error
+      }
+    })
+  )
+  return events
+}
 
+function App() {
+  const { isLoading, error, data } = useQuery('events', getAllUsersEvent)
+  const navigate = useNavigate()
   const redirect_uri = 'http://localhost:3000/callback'
 
   const options = {
@@ -35,26 +52,27 @@ function App() {
     window.open(googleauthurl, options.windowName, options.windowOptions)
   }
 
-  const getAllUsersEvent = async () => {
-    const users = getUsers()
-    const events = await Promise.all(
-      users.map(async (user) => {
-        try {
-          const event = await getCalenderEvents(user)
-          console.log('event', user.email, event)
-          return event
-        } catch (error) {
-          throw error
-        }
-      })
-    )
-    console.log('events', events)
-    setevents(events)
-  }
+  const generateData = () => {
+    if (isLoading)
+      return (
+        <p className="my-3 text-4xl sm:text-5xl lg:text-6xl font-bold sm:tracking-tight text-gray-900">
+          Loading...
+        </p>
+      )
 
-  useEffect(() => {
-    getAllUsersEvent()
-  }, [])
+    if (error)
+      return (
+        <p className="my-3 text-4xl sm:text-5xl lg:text-6xl font-bold sm:tracking-tight text-gray-900">
+          Something went wrong
+        </p>
+      )
+
+    return (
+      <p className="my-3 text-4xl sm:text-5xl lg:text-6xl font-bold sm:tracking-tight text-gray-900">
+        Events Found
+      </p>
+    )
+  }
 
   return (
     <div className="bg-white">
@@ -77,13 +95,16 @@ function App() {
             <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
               <a href={googleauthurl}>Add Google Account</a>
             </button>
+          </div>
+          <div className="flex justify-center pt-5">
             <button
-              onClick={() => getAllUsersEvent()}
+              onClick={() => navigate('/users')}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
-              Get Events
+              List Users
             </button>
           </div>
+          {generateData()}
         </div>
       </div>
     </div>

@@ -5,37 +5,24 @@ import { parseParms } from 'utils/parser'
 import googleapi from 'utils/googleapi'
 import storage from 'utils/storage'
 import Profile from './Profile'
-import { saveUser, upsertUser } from 'utils/user'
+import { upsertUser } from 'utils/user'
 import { toast } from 'react-toastify'
-
-interface User {
-  profile: string
-  name: string
-  email: string
-  verified_email: boolean
-}
+import { UserProfile } from 'utils/types'
 
 export default function Callback(): ReactElement {
   const location = useLocation()
-  const [usersState, setUsers] = useState<User[]>([])
+
+  const [usersState, setUsers] = useState<UserProfile[]>([])
+
   const params = parseParms(location.hash.substring(1))
 
   const requestTokens = async (token: string) => {
-    const { data } = await googleapi.get(
-      '/calendar/v3/calendars/primary/events',
-      {
-        headers: {
-          Authorization: 'Bearer ' + token
-        }
-      }
-    )
-    console.log('Calendar Events', data)
     const _user = await getUserInfo(token)
     setUsers((states) => [
       ...states,
       {
         profile: _user.picture,
-        name: `${_user.given_name} ${_user.family_name}`,
+        name: _user.name,
         email: _user.email,
         verified_email: _user.verified_email as boolean
       }
