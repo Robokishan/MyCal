@@ -7,6 +7,7 @@ import { getCalenderEvents, parseCalendarInfo } from 'utils/calendar'
 import { getUsers } from 'utils/user'
 import Calendar from '@toast-ui/react-calendar'
 import { ISchedule } from 'tui-calendar'
+import { toast } from 'react-toastify'
 
 const getAllUsersEvent = async () => {
   const users = getUsers()
@@ -14,9 +15,10 @@ const getAllUsersEvent = async () => {
     users.map(async (user) => {
       try {
         const event = await getCalenderEvents(user)
+        toast.info(`Updated ${user.email}`)
         return event
       } catch (error) {
-        throw error
+        toast.error(`${user.email} ${error}`)
       }
     })
   )
@@ -105,10 +107,6 @@ function App() {
       setschedules(calenders)
     }
   }, [data])
-
-  useEffect(() => {
-    console.log(schedules)
-  }, [schedules])
 
   const generateData = () => {
     if (isLoading)
