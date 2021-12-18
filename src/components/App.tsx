@@ -11,11 +11,12 @@ import { toast } from 'react-toastify'
 
 const getAllUsersEvent = async () => {
   const users = getUsers()
+  toast.dismiss()
   const events = await Promise.all(
     users.map(async (user) => {
       try {
         const event = await getCalenderEvents(user)
-        toast.info(`Updated ${user.email}`)
+        toast.info(`Updated ${user.email}`, { autoClose: 800 })
         return event
       } catch (error) {
         toast.error(`${user.email} ${error}`)
@@ -57,6 +58,7 @@ function App() {
   }
 
   useEffect(() => {
+    console.log('data', data)
     if (data && data.length > 0) {
       const _calendars = data.map((_data): ISchedule[] =>
         parseCalendarInfo('google', _data)
