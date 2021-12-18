@@ -36,6 +36,7 @@ export const removeuser = (id: number) => {
     users.splice(id, 1)
   }
   saveUsers(users)
+  return users
 }
 
 export const upsertUser = (user: User): MessageType => {

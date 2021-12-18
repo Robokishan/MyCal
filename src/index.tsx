@@ -17,13 +17,12 @@ render(
       <ToastContainer
         theme="dark"
         position="top-right"
-        autoClose={2000}
+        autoClose={1000}
         hideProgressBar
         newestOnTop
         closeOnClick
         pauseOnFocusLoss
         draggable
-        pauseOnHover
       />
       <BrowserRouter>
         <Routes>

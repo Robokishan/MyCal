@@ -1,35 +1,15 @@
 import { ReactElement, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { useQuery } from 'react-query'
 import Text from './Text'
 import { parseParms } from 'utils/parser'
 import googleapi from 'utils/googleapi'
-import storage from 'utils/storage'
 import Profile from './Profile'
 import { upsertUser } from 'utils/user'
-import { toast } from 'react-toastify'
-import { UserProfile } from 'utils/types'
 
-export default function Callback(): ReactElement {
-  const location = useLocation()
-
-  const [usersState, setUsers] = useState<UserProfile[]>([])
-
-  const params = parseParms(location.hash.substring(1))
-
-  const requestTokens = async (token: string) => {
-    const _user = await getUserInfo(token)
-    setUsers((states) => [
-      ...states,
-      {
-        profile: _user.picture,
-        name: _user.name,
-        email: _user.email,
-        verified_email: _user.verified_email as boolean
-      }
-    ])
-  }
-
-  const getUserInfo = async (token: string) => {
+const getUserInfo = async (token: string) => {
+  try {
     const { data } = await googleapi.get('/oauth2/v2/userinfo', {
       headers: {
         Authorization: 'Bearer ' + token
@@ -44,38 +24,61 @@ export default function Callback(): ReactElement {
     })
     success ? toast.success(message) : toast.info(message)
     return data
+  } catch (error) {
+    throw error
   }
+}
+
+const authenticateUser = async (token: string) => {
+  const _user = await getUserInfo(token)
+  return _user
+}
+
+export default function Callback(): ReactElement {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const params = parseParms(location.hash.substring(1))
 
   if (!params['access_token']) {
     return <Text>Not Found</Text>
   }
 
   const code = params['access_token']
-  storage.setToken(code)
+  const { isLoading, error, data } = useQuery(['Authenticate', code], () =>
+    authenticateUser(code)
+  )
+
+  if (isLoading)
+    return (
+      <p className="my-3 text-4xl sm:text-5xl lg:text-6xl font-bold sm:tracking-tight text-gray-900">
+        Loading...
+      </p>
+    )
+
+  if (error)
+    return (
+      <p className="my-3 text-4xl sm:text-5xl lg:text-6xl font-bold sm:tracking-tight text-gray-900">
+        Something went wrong
+      </p>
+    )
 
   return (
     <>
       <Text>{code}</Text>
-      <div className="bg-white">
-        <div className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl">
-          <div className="text-center">
-            <button
-              onClick={() => requestTokens(code)}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Get Events
-            </button>
-          </div>
-        </div>
+      <div className="text-center">
+        <button
+          className="mt-10 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => navigate('/')}
+        >
+          Go Back
+        </button>
       </div>
-      {usersState.map((user) => (
-        <Profile
-          key={user.email}
-          profile={user.profile}
-          email={user.email}
-          name={user.name}
-        />
-      ))}
+      <Profile
+        key={data.email}
+        profile={data.picture}
+        email={data.email}
+        name={data.name}
+      />
     </>
   )
 }
