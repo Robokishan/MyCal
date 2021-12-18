@@ -13,6 +13,7 @@ const getAllUsersInfos = async () => {
     users.map(async (_user) => {
       try {
         const user = await getUserInfo(_user)
+        toast.info(`Updated ${_user.email}`)
         return user
       } catch (error) {
         // throw error
