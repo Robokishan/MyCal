@@ -25,7 +25,7 @@ googleapis.interceptors.request.use(
   async (config) => {
     const headers = await getHeaders()
     config.baseURL = 'https://www.googleapis.com'
-    if (headers) config.headers
+    // if (headers) config.headers = headers
     return config
   },
   (error) => Promise.reject(error)
