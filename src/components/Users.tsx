@@ -4,6 +4,7 @@ import Text from './Text'
 import { getUsers, removeuser } from 'utils/user'
 import { getUserInfo } from 'utils/userApis'
 import Profile from './Profile'
+import { useNavigate } from 'react-router-dom'
 
 const getAllUsersInfos = async () => {
   const users = getUsers()
@@ -27,6 +28,8 @@ export default function Users(): ReactElement {
     getAllUsersInfos
   )
 
+  const navigate = useNavigate()
+
   return (
     <>
       <div className="bg-white">
@@ -35,6 +38,14 @@ export default function Users(): ReactElement {
             <p className="text-4xl sm:text-5xl lg:text-6xl font-bold sm:tracking-tight text-gray-900">
               All Users
             </p>
+          </div>
+          <div className="text-center">
+            <button
+              className="mt-10 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={() => navigate('/')}
+            >
+              Go Back
+            </button>
           </div>
         </div>
       </div>
@@ -58,13 +69,13 @@ export default function Users(): ReactElement {
         <>
           {data.map((user, index) => {
             return (
-              <div className="p-10 divide-x mb-10" key={user.email}>
+              <div className="p-2 divide-x mb-2" key={user.email}>
                 <Profile
                   email={user.email}
                   profile={user.picture}
                   name={user.name}
                 />
-                <div className="flex justify-center pt-5">
+                <div className="flex justify-center pt-1">
                   <button
                     onClick={() => {
                       removeuser(index)
@@ -75,6 +86,7 @@ export default function Users(): ReactElement {
                     Remove User
                   </button>
                 </div>
+                <hr className="mt-10" />
               </div>
             )
           })}
