@@ -3,8 +3,10 @@ import Avatar from 'components/Avatar'
 import { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { getCalenderEvents } from 'utils/calendar'
+import { getCalenderEvents, parseCalendarInfo } from 'utils/calendar'
 import { getUsers } from 'utils/user'
+import Calendar from '@toast-ui/react-calendar'
+import { ISchedule } from 'tui-calendar'
 
 const getAllUsersEvent = async () => {
   const users = getUsers()
@@ -12,7 +14,6 @@ const getAllUsersEvent = async () => {
     users.map(async (user) => {
       try {
         const event = await getCalenderEvents(user)
-        console.log('event', user.email, event)
         return event
       } catch (error) {
         throw error
@@ -24,6 +25,7 @@ const getAllUsersEvent = async () => {
 
 function App() {
   const { isLoading, error, data } = useQuery('events', getAllUsersEvent)
+  const [schedules, setschedules] = useState<ISchedule[]>([])
   const navigate = useNavigate()
   const redirect_uri = 'http://localhost:3000/callback'
 
@@ -51,6 +53,62 @@ function App() {
   const onClickSignin = () => {
     window.open(googleauthurl, options.windowName, options.windowOptions)
   }
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      const _calendars = data.map((_data): ISchedule[] =>
+        parseCalendarInfo('google', _data)
+      )
+      const calenders = [] as ISchedule[]
+      _calendars.forEach((_cal) => _cal.forEach((_c) => calenders.push(_c)))
+      // console.log(calenders.length)
+      const defaultCal = [
+        {
+          id: '1',
+          calendarId: '0',
+          title: 'TOAST UI Calendar Study',
+          category: 'time',
+          dueDateClass: '',
+          start: new Date().toISOString(),
+          end: new Date().toISOString()
+        },
+        {
+          id: '2',
+          calendarId: '0',
+          title: 'Practice',
+          category: 'milestone',
+          dueDateClass: '',
+          start: new Date().toISOString(),
+          end: new Date().toISOString(),
+          isReadOnly: true
+        },
+        {
+          id: '3',
+          calendarId: '0',
+          title: 'FE Workshop',
+          category: 'allday',
+          dueDateClass: '',
+          start: new Date().toISOString(),
+          end: new Date().toISOString(),
+          isReadOnly: true
+        },
+        {
+          id: '4',
+          calendarId: '0',
+          title: 'Report',
+          category: 'time',
+          dueDateClass: '',
+          start: new Date().toISOString(),
+          end: new Date().toISOString()
+        }
+      ]
+      setschedules(calenders)
+    }
+  }, [data])
+
+  useEffect(() => {
+    console.log(schedules)
+  }, [schedules])
 
   const generateData = () => {
     if (isLoading)
@@ -107,6 +165,15 @@ function App() {
           {generateData()}
         </div>
       </div>
+      <Calendar
+        height="900px"
+        scheduleView
+        useDetailPopup
+        taskView
+        useCreationPopup
+        schedules={schedules}
+        usageStatistics={false}
+      />
     </div>
   )
 }

@@ -1,5 +1,7 @@
 import googleapi from './googleapi'
 import { User } from './types'
+import { ISchedule } from 'tui-calendar'
+import { getColor } from './user'
 
 export const getCalenderEvents = async (user: User) => {
   if (user.type == 'google') {
@@ -15,10 +17,23 @@ export const getCalenderEvents = async (user: User) => {
   }
 }
 
-export const parseCalendarInfo = (type: string, calendar: any) => {
+export const parseCalendarInfo = (type: string, calendar: any): ISchedule[] => {
   if (type === 'google') {
-    return {}
+    const items = calendar.items
+    const parseSchedule = items.map((item: any, index: number): ISchedule => {
+      let color = getColor(calendar.summary)
+
+      return {
+        category: 'time',
+        bgColor: color,
+        id: String(index),
+        title: item.summary,
+        start: item.start?.dateTime,
+        end: item.end?.dateTime
+      }
+    })
+    return parseSchedule
   } else if (type === 'outlook') {
-    return {}
-  }
+    return []
+  } else return []
 }

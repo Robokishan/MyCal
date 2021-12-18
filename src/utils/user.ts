@@ -56,3 +56,13 @@ export const upsertUser = (user: User): MessageType => {
   saveUsers(users)
   return { success, message: success ? 'User Added' : 'User Updated' }
 }
+
+export const getColor = (email: string) => {
+  const users = getUsers()
+  const index = users.findIndex((_user) => _user.email === email)
+  if (index > -1) {
+    return colors[index]
+  } else 'grey'
+}
+
+const colors = ['red', 'green', 'blue', 'yellow']

@@ -11,6 +11,12 @@ import Users from 'components/Users'
 
 const queryClient = new QueryClient()
 
+import 'tui-calendar/dist/tui-calendar.css'
+
+// If you use the default popups, use this.
+import 'tui-date-picker/dist/tui-date-picker.css'
+import 'tui-time-picker/dist/tui-time-picker.css'
+
 render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>

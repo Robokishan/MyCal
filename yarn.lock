@@ -1296,6 +1296,13 @@
     "@babel/runtime" "^7.12.5"
     "@testing-library/dom" "^8.0.0"
 
+"@toast-ui/react-calendar@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@toast-ui/react-calendar/-/react-calendar-1.0.5.tgz#277443e12d2beab4de5cb117705fc06834e995a9"
+  integrity sha512-eG4BtdF5LvIHEyTlwZbWnLlL+GScLiWktRNV0A3L73oBFfJ5BQUNC/TRR13wfaJjXIvWYdV80ZYD75q7ilWznw==
+  dependencies:
+    tui-calendar "^1.12.5"
+
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
@@ -2259,6 +2266,11 @@ domexception@^2.0.1:
   integrity sha512-yxJ2mFy/sibVQlu5qHjOkf9J3K6zgmCxgJ94u2EdvDOV09H+32LtRswEcUsmUWN72pVLOEnTSRaIVVzVQgS0dg==
   dependencies:
     webidl-conversions "^5.0.0"
+
+dompurify@^2.3.1:
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-2.3.4.tgz#1cf5cf0105ccb4debdf6db162525bd41e6ddacc6"
+  integrity sha512-6BVcgOAVFXjI0JTjEvZy901Rghm+7fDQOrNIcxB4+gdhj6Kwp6T9VBhBY/AbagKHJocRkDYGd6wvI+p4/10xtQ==
 
 electron-to-chromium@^1.4.17:
   version "1.4.24"
@@ -5009,6 +5021,33 @@ tsutils@^3.21.0:
   integrity sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==
   dependencies:
     tslib "^1.8.1"
+
+tui-calendar@^1.12.5:
+  version "1.15.1"
+  resolved "https://registry.yarnpkg.com/tui-calendar/-/tui-calendar-1.15.1.tgz#809186198336274591f09f52e60bc6b7a56c9c2f"
+  integrity sha512-AB8E2dFM+Li4GUdzKkm6y7/JvPlTeCZry2h4azFhg2ArtZq99fm5QXPXSqBDcK158fm4Z84xWGP9+HMfRoeYtQ==
+  dependencies:
+    dompurify "^2.3.1"
+    tui-code-snippet "^1.5.0"
+    tui-date-picker "^4.3.0"
+    tui-time-picker "^2.1.4"
+
+tui-code-snippet@^1.5.0:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/tui-code-snippet/-/tui-code-snippet-1.5.2.tgz#f4b8f0f1ac996b0b5b621f77c9507af19a0de238"
+  integrity sha512-6UqTlQaaC1KLcmC0HAoq5dtl1G4Fib+R+NC7pmaV7kiIlZ7JqKhUmnOoGRcreAyzd81UTK/vCvhrw9QJskpCFQ==
+
+tui-date-picker@^4.3.0:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/tui-date-picker/-/tui-date-picker-4.3.1.tgz#33ced91def045e7452e81345be42b8c18072205e"
+  integrity sha512-LMXdiM6cXau4NVw3/1T4ltaLk2PZAn2RbRtVUPN30Zg905t9Ab+OJ8EgeEgLVW9osvLuO9raW63l7YwiT50v6Q==
+  dependencies:
+    tui-time-picker "^2.1.3"
+
+tui-time-picker@^2.1.3, tui-time-picker@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/tui-time-picker/-/tui-time-picker-2.1.4.tgz#17fe6f2f7619bc331c5a4c155d7728e6c97ff453"
+  integrity sha512-gqCasZgniE8slP83h3pUnSXyVWBBi7T+9gi0+RxB6ld6l2hgPuVax8o82ysz02pvQ5bEkfPP3sG1caeU+iH0Sw==
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
