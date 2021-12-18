@@ -12,7 +12,7 @@ const parseErrorCode = (error: any) => {
       toast.error('Something went wrong !')
     }
   } else {
-    toast.error('Something went wrong !')
+    toast.error(error.message)
   }
 
   return Promise.reject(error.response)
@@ -24,7 +24,7 @@ const googleapis = axios.create()
 googleapis.interceptors.request.use(
   async (config) => {
     const headers = await getHeaders()
-    config.baseURL = 'https://oauth2.googleapis.com'
+    config.baseURL = 'https://www.googleapis.com'
     if (headers) config.headers
     return config
   },
