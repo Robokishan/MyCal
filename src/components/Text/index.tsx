@@ -14,9 +14,9 @@ export default function index({ children }: Props): ReactElement {
           <p className="my-3 text-4xl sm:text-5xl lg:text-6xl font-bold sm:tracking-tight text-gray-900">
             Auth
           </p>
-          <p className="text-xl text-gray-400">{children}</p>
+          <p className="text-xl break-all  text-gray-400">{children}</p>
           <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="mt-10 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             onClick={() => navigate('/')}
           >
             Go Back
