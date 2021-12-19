@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify'
-import { LOCAL_STORAGE_USERS_KEY } from './constants'
+import { COLORS, LOCAL_STORAGE_USERS_KEY } from './constants'
 import { MessageType, User } from './types'
 
 export const getUsers = (): User[] => {
@@ -13,7 +13,7 @@ export const getUsers = (): User[] => {
 }
 
 export const saveUser = (user: User): MessageType => {
-  let users = getUsers()
+  const users = getUsers()
   if (
     users.filter(
       (_user) => _user.userId == user.userId && _user.type == user.type
@@ -31,7 +31,7 @@ export const saveUsers = (users: User[]) => {
 }
 
 export const removeuser = (id: number) => {
-  let users = getUsers()
+  const users = getUsers()
   if (id > -1) {
     users.splice(id, 1)
   }
@@ -40,7 +40,7 @@ export const removeuser = (id: number) => {
 }
 
 export const upsertUser = (user: User): MessageType => {
-  let users = getUsers()
+  const users = getUsers()
   let success = false
   const i = users.findIndex(
     (_user) => _user.type === user.type && _user.userId === user.userId
@@ -62,8 +62,15 @@ export const getColor = (email: string) => {
   const users = getUsers()
   const index = users.findIndex((_user) => _user.email === email)
   if (index > -1) {
-    return colors[index]
-  } else 'grey'
+    return COLORS[index][0]
+  } else return 'red'
 }
 
-const colors = ['red', 'green', 'blue', 'yellow']
+export const getTailWindColor = (email: string) => {
+  //heavy task since reading from localstorage too often
+  const users = getUsers()
+  const index = users.findIndex((_user) => _user.email === email)
+  if (index > -1) {
+    return COLORS[index][1]
+  } else 'bg-red-500'
+}

@@ -1,14 +1,14 @@
+import Calendar from '@toast-ui/react-calendar'
 import { buildUrl } from 'build-url-ts'
 import Avatar from 'components/Avatar'
 import { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
-import { Navigate, useNavigate } from 'react-router-dom'
-import { getCalenderEvents, parseCalendarInfo } from 'utils/calendar'
-import { getUsers, saveUser, upsertUser } from 'utils/user'
-import Calendar from '@toast-ui/react-calendar'
-import { ISchedule } from 'tui-calendar'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { getClientId, getClientSecret } from 'utils/google'
+import { ISchedule } from 'tui-calendar'
+import { getCalenderEvents, parseCalendarInfo } from 'utils/calendar'
+import { getClientId } from 'utils/google'
+import { getTailWindColor, getUsers, upsertUser } from 'utils/user'
 import { getAccessToken } from 'utils/userApis'
 
 const getAllUsersEvent = async () => {
@@ -55,7 +55,7 @@ function App() {
     }
   }
 
-  let googleauthurl = buildUrl('https://accounts.google.com', {
+  const googleauthurl = buildUrl('https://accounts.google.com', {
     path: '/o/oauth2/v2/auth',
     queryParams: {
       client_id: getClientId(),
@@ -167,21 +167,40 @@ function App() {
             />
           </p>
           <div className="flex justify-center pt-5">
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-              <a href={googleauthurl}>Add Google Account</a>
+            <a href={googleauthurl}>
+              <button className="py-2 px-4 font-bold text-white bg-blue-500 hover:bg-blue-700 rounded">
+                Add Google Account
+              </button>
+            </a>
+            <button className="py-2 px-4 ml-7 font-bold text-white rounded bg-orange-400 hover:bg-orange-600">
+              Add CalDav
             </button>
           </div>
           <div className="flex justify-center pt-5">
             <button
               onClick={() => navigate('/users')}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="py-2 px-4 font-bold text-white bg-green-700 hover:bg-green-900 rounded"
             >
               List Users
             </button>
           </div>
           {generateData()}
+          <div className="mx-10">
+            {getUsers().map((user) => {
+              const color = getTailWindColor(user.email)
+              return (
+                <div
+                  key={user.email}
+                  className={`${color} mx-2 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 text-white-700 rounded-full`}
+                >
+                  {user.email}
+                </div>
+              )
+            })}
+          </div>
         </div>
       </div>
+
       <Calendar
         height="900px"
         scheduleView
@@ -190,6 +209,9 @@ function App() {
         useCreationPopup
         schedules={schedules}
         usageStatistics={false}
+        disableDblClick={true}
+        disableClick={false}
+        isReadOnly={false}
       />
     </div>
   )
