@@ -18,7 +18,6 @@ const getAllUsersInfos = async () => {
       } catch (error) {
         // throw error
         toast.error(`${_user.email} ${error}`)
-        // console.error('[ERROR_USERINFO]', error)
       }
     })
   )
