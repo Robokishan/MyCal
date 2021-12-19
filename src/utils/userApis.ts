@@ -7,7 +7,7 @@ export const getUserInfo = async (user: User) => {
   if (user.type == 'google') {
     const { data } = await googleapi.get('/oauth2/v2/userinfo', {
       headers: {
-        Authorization: 'Bearer ' + user.token
+        Authorization: 'Bearer ' + user.access_token
       }
     })
     return data
