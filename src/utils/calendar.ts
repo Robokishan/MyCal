@@ -33,6 +33,7 @@ export const parseCalendarInfo = (type: string, calendar: any): ISchedule[] => {
         parseSchedule.push({
           category: 'time',
           bgColor: color,
+          borderColor: color,
           id: String(index),
           title: item.summary,
           start: item.start?.dateTime || item.start?.date,
