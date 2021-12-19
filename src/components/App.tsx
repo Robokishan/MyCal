@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Calendar from '@toast-ui/react-calendar'
 import { buildUrl } from 'build-url-ts'
 import Avatar from 'components/Avatar'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -40,9 +41,29 @@ const getAllUsersEvent = async () => {
 }
 
 function App() {
+  const defaultOptions = {
+    dateRange: '',
+    view: 'week',
+    viewModeOptions: [
+      {
+        title: 'Monthly',
+        value: 'month'
+      },
+      {
+        title: 'Weekly',
+        value: 'week'
+      },
+      {
+        title: 'Daily',
+        value: 'day'
+      }
+    ]
+  }
   const { isLoading, error, data } = useQuery('events', getAllUsersEvent)
   const [schedules, setschedules] = useState<ISchedule[]>([])
   const navigate = useNavigate()
+  const [view, setview] = useState('week')
+  const calendarRef = useRef<any>(undefined)
   const redirect_uri = 'http://localhost:3000/callback'
 
   const options = {
@@ -70,6 +91,10 @@ function App() {
 
   const onClickSignin = () => {
     window.open(googleauthurl, options.windowName, options.windowOptions)
+  }
+  const onChangeSelect = (e: any) => {
+    console.log(e.target.value)
+    setview(e.target.value)
   }
 
   useEffect(() => {
@@ -148,10 +173,9 @@ function App() {
       </p>
     )
   }
-
   return (
     <div className="bg-white">
-      <div className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl">
+      <div className="px-4 sm:px-6 lg:px-8 mx-auto max-w-screen-xl">
         <div className="text-center">
           <h2 className="text-base font-semibold tracking-wide text-blue-600 uppercase">
             Welcome to
@@ -201,8 +225,59 @@ function App() {
         </div>
       </div>
 
+      <div className="flex justify-center pt-5 my-10">
+        <select
+          className="py-1.5
+      px-3
+      m-0
+      text-base
+      font-normal
+      text-gray-700
+      rounded
+      transition
+      ease-in-out
+      focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+  mx-2    block
+form-select appearance-none
+      bg-white bg-clip-padding bg-no-repeat
+      border border-solid border-gray-300"
+          onChange={onChangeSelect}
+          value={view}
+        >
+          {defaultOptions.viewModeOptions.map((option, index) => (
+            <option
+              selected={option.value == view}
+              value={option.value}
+              key={index}
+            >
+              {option.title}
+            </option>
+          ))}
+        </select>
+        <button
+          onClick={() => calendarRef.current.getInstance().prev()}
+          className="py-2 px-4 font-bold text-white bg-blue-500 hover:bg-blue-700 rounded"
+        >
+          Previous
+        </button>
+        <button
+          onClick={() => calendarRef.current.getInstance().today()}
+          className="py-2 px-4 ml-7 font-bold text-white bg-green-500 hover:bg-green-600 rounded"
+        >
+          Today
+        </button>
+        <button
+          onClick={() => calendarRef.current.getInstance().next()}
+          className="py-2 px-4 ml-7 font-bold text-white rounded bg-orange-400 hover:bg-orange-600"
+        >
+          Next
+        </button>
+      </div>
+
       <Calendar
-        height="900px"
+        ref={calendarRef}
+        height="200px"
+        view={view}
         scheduleView
         useDetailPopup
         taskView
