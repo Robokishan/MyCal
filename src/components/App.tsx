@@ -11,6 +11,7 @@ import { getCalenderEvents, parseCalendarInfo } from 'utils/calendar'
 import { getClientId } from 'utils/google'
 import { getTailWindColor, getUsers, upsertUser } from 'utils/user'
 import { getAccessToken } from 'utils/userApis'
+import Modal from './Modal'
 
 const getAllUsersEvent = async () => {
   const users = getUsers()
@@ -64,6 +65,7 @@ function App() {
   const navigate = useNavigate()
   const [view, setview] = useState('week')
   const calendarRef = useRef<any>(undefined)
+  const [isModalOpen, setisModalOpen] = useState(false)
   const redirect_uri = 'http://localhost:3000/callback'
 
   const options = {
@@ -196,10 +198,17 @@ function App() {
                 Add Google Account
               </button>
             </a>
-            <button className="py-2 px-4 ml-7 font-bold text-white rounded bg-orange-400 hover:bg-orange-600">
+            <button
+              onClick={() => setisModalOpen(true)}
+              className="py-2 px-4 ml-7 font-bold text-white rounded bg-orange-400 hover:bg-orange-600"
+            >
               Add CalDav
             </button>
           </div>
+          <Modal
+            closeModal={() => setisModalOpen(false)}
+            modalIsOpen={isModalOpen}
+          />
           <div className="flex justify-center pt-5">
             <button
               onClick={() => navigate('/users')}
