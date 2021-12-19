@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { getCalenderEvents, parseCalendarInfo } from 'utils/calendar'
-import { getUsers } from 'utils/user'
+import { getUsers, saveUser } from 'utils/user'
 import Calendar from '@toast-ui/react-calendar'
 import { ISchedule } from 'tui-calendar'
 import { toast } from 'react-toastify'
+import { getClientId, getClientSecret } from 'utils/google'
+import { getAccessToken } from 'utils/userApis'
 
 const getAllUsersEvent = async () => {
   const users = getUsers()
@@ -18,8 +20,19 @@ const getAllUsersEvent = async () => {
         const event = await getCalenderEvents(user)
         toast.info(`Updated ${user.email}`, { autoClose: 800 })
         return event
-      } catch (error) {
-        toast.error(`${user.email} ${error}`)
+      } catch (error: any) {
+        if (error.status == 401) {
+          const { access_token } = await getAccessToken(
+            'google',
+            user.refreshToken
+          )
+          user = {
+            ...user,
+            access_token
+          }
+          saveUser(user)
+        }
+        toast.error(`${user.email} ${error.data.error.errors[0].message}`)
       }
     })
   )
@@ -45,9 +58,11 @@ function App() {
   let googleauthurl = buildUrl('https://accounts.google.com', {
     path: '/o/oauth2/v2/auth',
     queryParams: {
-      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID as string,
+      client_id: getClientId(),
       redirect_uri,
-      response_type: 'token',
+      prompt: 'consent',
+      access_type: 'offline',
+      response_type: 'code',
       scope:
         'https://www.googleapis.com/auth/calendar https://www.google.com/calendar/feeds/ https://www.google.com/calendar/feeds http://www.google.com/calendar/feeds/default/allcalendars/full https://www.google.com/calendar/feeds/default/owncalendars/full http://www.google.com/calendar/feeds/ http://www.google.com/calendar/feeds https://www.google.com/calendar/feeds/default/private/full http://www.google.com/calendar/feeds/default/private/full http://www.google.com/calendar/feeds/default/owncalendars/full/ https://www.google.com/calendar/feeds/default https://www.google.com/calendar/freebusy https://www.googleapis.com/auth/calendar.app.created https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.events.freebusy https://www.googleapis.com/auth/calendar.events.owned https://www.googleapis.com/auth/calendar.events.owned.readonly https://www.googleapis.com/auth/calendar.events.public.readonly https://www.googleapis.com/auth/calendar.events.readonly https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
     }
@@ -60,11 +75,13 @@ function App() {
   useEffect(() => {
     console.log('data', data)
     if (data && data.length > 0) {
-      const _calendars = data.map((_data): ISchedule[] =>
-        parseCalendarInfo('google', _data)
-      )
+      const _calendars = data?.map((_data): ISchedule[] | undefined => {
+        if (_data) return parseCalendarInfo('google', _data)
+      })
       const calenders = [] as ISchedule[]
-      _calendars.forEach((_cal) => _cal.forEach((_c) => calenders.push(_c)))
+      _calendars &&
+        _calendars.length > 0 &&
+        _calendars?.forEach((_cal) => _cal?.forEach((_c) => calenders.push(_c)))
       // console.log(calenders.length)
       const defaultCal = [
         {

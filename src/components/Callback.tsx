@@ -7,6 +7,8 @@ import { parseParms } from 'utils/parser'
 import googleapi from 'utils/googleapi'
 import Profile from './Profile'
 import { upsertUser } from 'utils/user'
+import { AUTH_CODE_TOKEN } from 'utils/constants'
+import { getAccessRefreshToken } from 'utils/userApis'
 
 const getUserInfo = async (token: string) => {
   try {
@@ -15,14 +17,7 @@ const getUserInfo = async (token: string) => {
         Authorization: 'Bearer ' + token
       }
     })
-    const { success, message } = upsertUser({
-      api: 'api',
-      userId: data.id,
-      email: data.email,
-      type: 'google',
-      token: token
-    })
-    success ? toast.success(message) : toast.info(message)
+
     return data
   } catch (error) {
     throw error
@@ -30,37 +25,40 @@ const getUserInfo = async (token: string) => {
 }
 
 const authenticateUser = async (token: string) => {
-  const _user = await getUserInfo(token)
+  let user = await getAccessRefreshToken('google', token)
+
+  const _user = await getUserInfo(user.access_token)
+  user = {
+    ...user,
+    ..._user
+  }
+  const { success, message } = upsertUser({
+    api: 'api',
+    userId: user.id,
+    email: user.email,
+    type: 'google',
+    access_token: user.access_token,
+    refreshToken: user.refresh_token,
+    token: user.token,
+    jwt_token: user.id_token
+  })
+  success ? toast.success(message) : toast.info(message)
   return _user
 }
 
 export default function Callback(): ReactElement {
   const location = useLocation()
   const navigate = useNavigate()
-  const params = parseParms(location.hash.substring(1))
+  const params = parseParms(location.search.substring(1))
 
-  if (!params['access_token']) {
+  if (!params[AUTH_CODE_TOKEN]) {
     return <Text>Not Found</Text>
   }
 
-  const code = params['access_token']
+  const code = params[AUTH_CODE_TOKEN]
   const { isLoading, error, data } = useQuery(['Authenticate', code], () =>
     authenticateUser(code)
   )
-
-  if (isLoading)
-    return (
-      <p className="my-3 text-4xl sm:text-5xl lg:text-6xl font-bold sm:tracking-tight text-gray-900">
-        Loading...
-      </p>
-    )
-
-  if (error)
-    return (
-      <p className="my-3 text-4xl sm:text-5xl lg:text-6xl font-bold sm:tracking-tight text-gray-900">
-        Something went wrong
-      </p>
-    )
 
   return (
     <>
@@ -73,12 +71,24 @@ export default function Callback(): ReactElement {
           Go Back
         </button>
       </div>
-      <Profile
-        key={data.email}
-        profile={data.picture}
-        email={data.email}
-        name={data.name}
-      />
+      {isLoading && !data && (
+        <p className="my-3 text-4xl sm:text-5xl lg:text-6xl font-bold sm:tracking-tight text-gray-900">
+          Loading...
+        </p>
+      )}
+      {!isLoading && error && (
+        <p className="my-3 text-4xl sm:text-5xl lg:text-6xl font-bold sm:tracking-tight text-gray-900">
+          Something went wrong
+        </p>
+      )}
+      {!isLoading && data && (
+        <Profile
+          key={data.email}
+          profile={data.picture}
+          email={data.email}
+          name={data.name}
+        />
+      )}
     </>
   )
 }

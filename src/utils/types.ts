@@ -1,9 +1,14 @@
+export type Providers = 'google' | 'notion' | 'outlook'
+export type CalenderApiType = 'api' | 'caldav'
 export interface User {
-  type: 'google' | 'notion' | 'outlook'
-  api: 'api' | 'caldav'
+  type: Providers
+  api: CalenderApiType
   token: string
+  access_token: string
+  refreshToken: string
   userId: string
   email: string
+  jwt_token: string
 }
 export interface MessageType {
   message: string

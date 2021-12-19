@@ -9,7 +9,7 @@ export const getCalenderEvents = async (user: User) => {
       '/calendar/v3/calendars/primary/events',
       {
         headers: {
-          Authorization: 'Bearer ' + user.token
+          Authorization: 'Bearer ' + user.access_token
         }
       }
     )
