@@ -58,6 +58,7 @@ export const upsertUser = (user: User): MessageType => {
 }
 
 export const getColor = (email: string) => {
+  //heavy task since reading from localstorage too often
   const users = getUsers()
   const index = users.findIndex((_user) => _user.email === email)
   if (index > -1) {

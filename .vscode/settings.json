@@ -3,6 +3,9 @@
     "javascript": "javascript",
     "html": "HTML"
   },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },

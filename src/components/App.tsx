@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { getCalenderEvents, parseCalendarInfo } from 'utils/calendar'
-import { getUsers, saveUser } from 'utils/user'
+import { getUsers, saveUser, upsertUser } from 'utils/user'
 import Calendar from '@toast-ui/react-calendar'
 import { ISchedule } from 'tui-calendar'
 import { toast } from 'react-toastify'
@@ -30,7 +30,7 @@ const getAllUsersEvent = async () => {
             ...user,
             access_token
           }
-          saveUser(user)
+          upsertUser(user)
         }
         toast.error(`${user.email} ${error.data.error.errors[0].message}`)
       }
