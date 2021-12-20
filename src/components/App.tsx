@@ -7,8 +7,9 @@ import { useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { ISchedule } from 'tui-calendar'
-import { getCalenderEvents, parseCalendarInfo } from 'utils/calendar'
-import { getClientId } from 'utils/google'
+import { getCalenderEvents } from 'utils/calendar'
+import { getGoogleClientId, getMicrosoftClientId } from 'utils/google'
+import { getMicrosoftAcessToken } from 'utils/microsoft/calendar'
 import { getTailWindColor, getUsers, upsertUser } from 'utils/user'
 import { getAccessToken } from 'utils/userApis'
 import Modal from './Modal'
@@ -24,15 +25,26 @@ const getAllUsersEvent = async () => {
         return event
       } catch (error: any) {
         if (error.status == 401) {
-          const { access_token } = await getAccessToken(
-            'google',
-            user.refreshToken
-          )
-          user = {
-            ...user,
-            access_token
+          if (user.type == 'google') {
+            const { access_token } = await getAccessToken(
+              'google',
+              user.refreshToken
+            )
+            user = {
+              ...user,
+              access_token
+            }
+            upsertUser(user)
+          } else if (user.type == 'microsoft') {
+            const { access_token } = await getMicrosoftAcessToken(
+              user.refreshToken
+            )
+            user = {
+              ...user,
+              access_token
+            }
+            upsertUser(user)
           }
-          upsertUser(user)
         }
         toast.error(`${user.email} ${error.data.error.errors[0].message}`)
       }
@@ -78,10 +90,11 @@ function App() {
     }
   }
 
+  // google url
   const googleauthurl = buildUrl('https://accounts.google.com', {
     path: '/o/oauth2/v2/auth',
     queryParams: {
-      client_id: getClientId(),
+      client_id: getGoogleClientId(),
       redirect_uri,
       prompt: 'consent',
       access_type: 'offline',
@@ -91,25 +104,36 @@ function App() {
     }
   })
 
+  // microsoft url
+  const microsofturl = buildUrl(
+    'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+    {
+      queryParams: {
+        client_id: getMicrosoftClientId(),
+        redirect_uri: 'http://localhost:3000/microsoft/callback',
+        prompt: 'select_account',
+        response_type: 'code',
+        response_mode: 'fragment',
+        scope:
+          'Calendars.Read Calendars.ReadWrite openid profile offline_access'
+      }
+    }
+  )
+
   const onClickSignin = () => {
     window.open(googleauthurl, options.windowName, options.windowOptions)
   }
   const onChangeSelect = (e: any) => {
-    console.log(e.target.value)
     setview(e.target.value)
   }
 
   useEffect(() => {
     console.log('data', data)
     if (data && data.length > 0) {
-      const _calendars = data?.map((_data): ISchedule[] | undefined => {
-        if (_data) return parseCalendarInfo('google', _data)
-      })
       const calenders = [] as ISchedule[]
-      _calendars &&
-        _calendars.length > 0 &&
-        _calendars?.forEach((_cal) => _cal?.forEach((_c) => calenders.push(_c)))
-      // console.log(calenders.length)
+      data &&
+        data.length > 0 &&
+        data?.forEach((_cal) => _cal?.forEach((_c: any) => calenders.push(_c)))
       const defaultCal = [
         {
           id: '1',
@@ -198,12 +222,11 @@ function App() {
                 Add Google Account
               </button>
             </a>
-            <button
-              onClick={() => setisModalOpen(true)}
-              className="py-2 px-4 ml-7 font-bold text-white rounded bg-orange-400 hover:bg-orange-600"
-            >
-              Add CalDav
-            </button>
+            <a href={microsofturl}>
+              <button className="py-2 px-4 ml-7 font-bold text-white rounded bg-orange-400 hover:bg-orange-600">
+                Add Outlook
+              </button>
+            </a>
           </div>
           <Modal
             closeModal={() => setisModalOpen(false)}
@@ -220,10 +243,10 @@ function App() {
           {generateData()}
           <div className="mx-10">
             {getUsers().map((user) => {
-              const color = getTailWindColor(user.email)
+              const color = getTailWindColor(user.email, user.type)
               return (
                 <div
-                  key={user.email}
+                  key={`${user.email}-${user.type}`}
                   className={`${color} mx-2 text-xs inline-flex items-center font-bold leading-sm uppercase px-3 py-1 text-white-700 rounded-full`}
                 >
                   {user.email}

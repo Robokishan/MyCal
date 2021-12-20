@@ -1,4 +1,5 @@
-export type Providers = 'google' | 'notion' | 'outlook'
+export type Providers = 'google' | 'notion' | 'microsoft'
+
 export type CalenderApiType = 'api' | 'caldav'
 export interface User {
   type: Providers
@@ -18,6 +19,7 @@ export interface MessageType {
 export interface UserProfile {
   profile: string
   name: string
+  type?: Providers
   email: string
   verified_email: boolean
 }

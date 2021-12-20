@@ -4,9 +4,10 @@ import 'tailwindcss/tailwind.css'
 import App from 'components/App'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Callback from 'components/Callback'
+import MicrosoftCallback from 'components/Microsoft/Callback'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import Users from 'components/Users'
 
 const queryClient = new QueryClient()
@@ -34,6 +35,7 @@ render(
         <Routes>
           <Route index element={<App />} />
           <Route path="callback" element={<Callback />} />
+          <Route path="microsoft/callback" element={<MicrosoftCallback />} />
           <Route path="users" element={<Users />} />
         </Routes>
       </BrowserRouter>

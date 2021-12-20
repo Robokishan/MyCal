@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify'
 import { COLORS, LOCAL_STORAGE_USERS_KEY } from './constants'
-import { MessageType, User } from './types'
+import { MessageType, Providers, User } from './types'
 
 export const getUsers = (): User[] => {
   let users = [] as User[]
@@ -57,19 +57,23 @@ export const upsertUser = (user: User): MessageType => {
   return { success, message: success ? 'User Added' : 'User Updated' }
 }
 
-export const getColor = (email: string) => {
+export const getColor = (email: string, type: Providers) => {
   //heavy task since reading from localstorage too often
   const users = getUsers()
-  const index = users.findIndex((_user) => _user.email === email)
+  const index = users.findIndex(
+    (_user) => _user.email === email && _user.type == type
+  )
   if (index > -1) {
     return COLORS[index][0]
   } else return 'red'
 }
 
-export const getTailWindColor = (email: string) => {
+export const getTailWindColor = (email: string, type: Providers) => {
   //heavy task since reading from localstorage too often
   const users = getUsers()
-  const index = users.findIndex((_user) => _user.email === email)
+  const index = users.findIndex(
+    (_user) => _user.email === email && _user.type == type
+  )
   if (index > -1) {
     return COLORS[index][1]
   } else 'bg-red-500'

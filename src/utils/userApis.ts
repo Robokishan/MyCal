@@ -1,4 +1,4 @@
-import { getClientId, getClientSecret } from './google'
+import { getGoogleClientId, getGooogleClientSecret } from './google'
 import googleapi from './googleapi'
 import oauth2google from './oauth.google'
 import { Providers, User } from './types'
@@ -10,7 +10,7 @@ export const getUserInfo = async (user: User) => {
         Authorization: 'Bearer ' + user.access_token
       }
     })
-    return data
+    return { ...data, type: user.type }
   }
 }
 
@@ -23,8 +23,8 @@ export const getAccessRefreshToken = async (type: Providers, token: string) => {
         params: {
           code: token,
           redirect_uri: 'http://localhost:3000/callback',
-          client_id: getClientId(),
-          client_secret: getClientSecret(),
+          client_id: getGoogleClientId(),
+          client_secret: getGooogleClientSecret(),
           grant_type: 'authorization_code',
           scope: ''
         }
@@ -44,8 +44,8 @@ export const getAccessToken = async (
       {},
       {
         params: {
-          client_id: getClientId(),
-          client_secret: getClientSecret(),
+          client_id: getGoogleClientId(),
+          client_secret: getGooogleClientSecret(),
           grant_type: 'refresh_token',
           refresh_token: refresh_token
         }

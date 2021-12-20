@@ -5,9 +5,15 @@ interface Props {
   profile: string
   name: string
   email: string
+  type?: string
 }
 
-export default function index({ profile, name, email }: Props): ReactElement {
+export default function index({
+  profile,
+  name,
+  email,
+  type
+}: Props): ReactElement {
   return (
     <div className="bg-white">
       <div className="py-10 mx-auto max-w-screen-xl">
@@ -15,6 +21,12 @@ export default function index({ profile, name, email }: Props): ReactElement {
           <h2 className="text-base font-semibold tracking-wide text-blue-600 uppercase">
             {name}
           </h2>
+          {type && (
+            <h2 className="text-base font-semibold tracking-wide text-blue-600 uppercase">
+              {type}
+            </h2>
+          )}
+
           <p className="my-3 text-4xl sm:text-5xl lg:text-6xl font-bold sm:tracking-tight text-gray-900">
             {email}
           </p>

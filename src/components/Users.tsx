@@ -3,6 +3,7 @@ import { useQuery } from 'react-query'
 import Text from './Text'
 import { getUsers, removeuser } from 'utils/user'
 import { getUserInfo } from 'utils/userApis'
+import { getMicrosoftUserInfo } from 'utils/microsoft/calendar'
 import Profile from './Profile'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -12,11 +13,12 @@ const getAllUsersInfos = async () => {
   const userInfos = await Promise.all(
     users.map(async (_user) => {
       try {
-        const user = await getUserInfo(_user)
-
-        return user
+        if (_user.type == 'google') return await getUserInfo(_user)
+        if (_user.type == 'microsoft') return await getMicrosoftUserInfo(_user)
       } catch (error) {
         // throw error
+        // just so incase
+        return _user
         toast.error(`${_user.email} ${error}`)
       }
     })
@@ -43,7 +45,7 @@ export default function Users(): ReactElement {
           </div>
           <div className="text-center">
             <button
-              className="mt-10 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="py-2 px-4 mt-10 font-bold text-white bg-blue-500 hover:bg-blue-700 rounded"
               onClick={() => navigate('/')}
             >
               Go Back
@@ -70,27 +72,30 @@ export default function Users(): ReactElement {
       {!isLoading && data && (
         <>
           {data.map((user, index) => {
-            return (
-              <div className="p-2 divide-x mb-2" key={user.email}>
-                <Profile
-                  email={user.email}
-                  profile={user.picture}
-                  name={user.name}
-                />
-                <div className="flex justify-center pt-1">
-                  <button
-                    onClick={() => {
-                      removeuser(index)
-                      refetch()
-                    }}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  >
-                    Remove User
-                  </button>
+            if (user) {
+              return (
+                <div className="p-2 mb-2 divide-x" key={user.email}>
+                  <Profile
+                    type={user.type}
+                    email={user.email}
+                    profile={user.picture}
+                    name={user.name}
+                  />
+                  <div className="flex justify-center pt-1">
+                    <button
+                      onClick={() => {
+                        removeuser(index)
+                        refetch()
+                      }}
+                      className="py-2 px-4 font-bold text-white bg-blue-500 hover:bg-blue-700 rounded"
+                    >
+                      Remove User
+                    </button>
+                  </div>
+                  <hr className="mt-10" />
                 </div>
-                <hr className="mt-10" />
-              </div>
-            )
+              )
+            }
           })}
         </>
       )}

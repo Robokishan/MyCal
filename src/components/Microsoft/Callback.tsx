@@ -1,33 +1,20 @@
-import { ReactElement, useEffect, useState } from 'react'
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable no-useless-catch */
+import { ReactElement } from 'react'
+import { useQuery } from 'react-query'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { useQuery } from 'react-query'
-import Text from './Text'
-import { parseParms } from 'utils/parser'
-import googleapi from 'utils/googleapi'
-import Profile from './Profile'
-import { upsertUser } from 'utils/user'
 import { AUTH_CODE_TOKEN } from 'utils/constants'
-import { getAccessRefreshToken } from 'utils/userApis'
-
-const getUserInfo = async (token: string) => {
-  try {
-    const { data } = await googleapi.get('/oauth2/v2/userinfo', {
-      headers: {
-        Authorization: 'Bearer ' + token
-      }
-    })
-
-    return data
-  } catch (error) {
-    throw error
-  }
-}
+import { getMicrosoftUser } from 'utils/microsoft/calendar'
+import { getAccessRefreshToken } from 'utils/microsoft/user'
+import { parseParms } from 'utils/parser'
+import { upsertUser } from 'utils/user'
+import Profile from '../Profile'
+import Text from '../Text'
 
 const authenticateUser = async (token: string) => {
-  let user = await getAccessRefreshToken('google', token)
-
-  const _user = await getUserInfo(user.access_token)
+  let user = await getAccessRefreshToken(token)
+  const _user = await getMicrosoftUser(user.access_token)
   user = {
     ...user,
     ..._user
@@ -35,21 +22,21 @@ const authenticateUser = async (token: string) => {
   const { success, message } = upsertUser({
     api: 'api',
     userId: user.id,
-    email: user.email,
-    type: 'google',
+    email: user.userPrincipalName,
+    type: 'microsoft',
     access_token: user.access_token,
     refreshToken: user.refresh_token,
     token: user.token,
     jwt_token: user.id_token
   })
   success ? toast.success(message) : toast.info(message)
-  return _user
+  return user
 }
 
 export default function Callback(): ReactElement {
   const location = useLocation()
   const navigate = useNavigate()
-  const params = parseParms(location.search.substring(1))
+  const params = parseParms(location.hash.substring(1))
 
   if (!params[AUTH_CODE_TOKEN]) {
     return <Text>Not Found</Text>
@@ -83,7 +70,7 @@ export default function Callback(): ReactElement {
       )}
       {!isLoading && data && (
         <Profile
-          key={`${data.email}-${data.type}`}
+          key={data.email}
           profile={data.picture}
           email={data.email}
           name={data.name}

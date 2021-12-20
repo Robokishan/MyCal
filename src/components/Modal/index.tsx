@@ -17,10 +17,13 @@ const customStyles = {
     backgroundColor: 'none',
     border: 'none',
     transform: 'translate(-50%, -50%)',
-    borderRadius: '4px',
+    borderRadius: '20px',
     // border: '1px red solid',
     boxShadow:
       '0 0 #0000, 0 0 #0000, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
+  },
+  overlay: {
+    background: '#00000050'
   }
 }
 export default function Modal({
@@ -35,50 +38,37 @@ export default function Modal({
       contentLabel="Example Modal"
     >
       <div className="w-full max-w-xs">
-        <form className="px-8 pt-6 pb-8 mb-4 ">
+        <form className="px-6 pt-6 pb-1 mb-4 ">
           <div className="mb-4">
             <label
               className="block mb-2 text-sm font-bold text-gray-700"
-              htmlFor="username"
+              htmlFor="link"
             >
-              Username
+              Link
             </label>
             <input
               className="py-2 px-3 w-full leading-tight text-gray-700 rounded border shadow appearance-none focus:outline-none focus:shadow-outline"
-              id="username"
+              id="link"
               type="text"
-              placeholder="Username"
+              placeholder="Link"
             />
           </div>
-          <div className="mb-6">
-            <label
-              className="block mb-2 text-sm font-bold text-gray-700"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <input
-              className="py-2 px-3 mb-3 w-full leading-tight text-gray-700 rounded border border-red-500 shadow appearance-none focus:outline-none focus:shadow-outline"
-              id="password"
-              type="password"
-              placeholder="******************"
-            />
-            <p className="text-xs italic text-red-500">
-              Please choose a password.
-            </p>
-          </div>
+
           <div className="flex justify-between items-center">
             <button
               className="py-2 px-4 font-bold text-white bg-blue-500 hover:bg-blue-700 rounded focus:outline-none focus:shadow-outline"
               type="button"
             >
-              Sign In
+              Add
+            </button>
+            <button
+              className="py-2 px-4 font-bold text-white hover:bg-yellow-700 rounded focus:outline-none bg-orange-500 focus:shadow-outline"
+              type="button"
+            >
+              Cancel
             </button>
           </div>
         </form>
-        <p className="text-xs text-center text-gray-500">
-          &copy;2020 Acme Corp. All rights reserved.
-        </p>
       </div>
     </ReactModal>
   )
