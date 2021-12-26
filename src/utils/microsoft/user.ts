@@ -14,7 +14,7 @@ export const getAccessRefreshToken = async (code: string): Promise<any> => {
   body.append('grant_type', 'authorization_code')
 
   const { data } = await axios.post(
-    'http://localhost:8085/microsoft/common/oauth2/v2.0/token',
+    'https://robo-nginx.herokuapp.com/microsoft/common/oauth2/v2.0/token',
 
     body
   )
