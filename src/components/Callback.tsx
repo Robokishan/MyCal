@@ -11,17 +11,13 @@ import { AUTH_CODE_TOKEN } from 'utils/constants'
 import { getAccessRefreshToken } from 'utils/userApis'
 
 const getUserInfo = async (token: string) => {
-  try {
-    const { data } = await googleapi.get('/oauth2/v2/userinfo', {
-      headers: {
-        Authorization: 'Bearer ' + token
-      }
-    })
+  const { data } = await googleapi.get('/oauth2/v2/userinfo', {
+    headers: {
+      Authorization: 'Bearer ' + token
+    }
+  })
 
-    return data
-  } catch (error) {
-    throw error
-  }
+  return data
 }
 
 const authenticateUser = async (token: string) => {

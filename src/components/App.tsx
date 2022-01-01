@@ -10,6 +10,7 @@ import { ISchedule } from 'tui-calendar'
 import { getCalenderEvents } from 'utils/calendar'
 import { getGoogleClientId, getMicrosoftClientId } from 'utils/google'
 import { getMicrosoftAcessToken } from 'utils/microsoft/calendar'
+import { refreshAccessToken } from 'utils/microsoft/user'
 import { getTailWindColor, getUsers, upsertUser } from 'utils/user'
 import { getAccessToken } from 'utils/userApis'
 import Modal from './Modal'
@@ -36,9 +37,7 @@ const getAllUsersEvent = async () => {
             }
             upsertUser(user)
           } else if (user.type == 'microsoft') {
-            const { access_token } = await getMicrosoftAcessToken(
-              user.refreshToken
-            )
+            const { access_token } = await refreshAccessToken(user.refreshToken)
             user = {
               ...user,
               access_token
