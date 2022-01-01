@@ -39,6 +39,5 @@ export const refreshAccessToken = async (
 
     body
   )
-  console.log('token-123', data)
   return data
 }

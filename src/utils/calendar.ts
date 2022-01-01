@@ -2,12 +2,10 @@ import googleapi from './googleapi'
 import { User } from './types'
 import { ISchedule } from 'tui-calendar'
 import { getColor } from './user'
-import moment from 'moment'
 import { getMicrosoftCalendarEvents } from './microsoft/calendar'
 
 export const getCalenderEvents = async (user: User) => {
   if (user.type == 'google') {
-    console.log(moment().subtract(6, 'months').toISOString())
     const { data } = await googleapi.get(
       '/calendar/v3/calendars/primary/events',
       {
@@ -41,10 +39,7 @@ export const parseCalendarInfo = (type: string, calendar: any): ISchedule[] => {
     items?.forEach((item: any, index: number) => {
       if (item && item?.start) {
         const color = getColor(calendar.summary, type)
-        //   console.log(
-        //     item.start,
-        //     moment(item.start?.dateTime, moment.ISO_8601, true).isValid()
-        //   )
+
         const _p = {
           category: 'time',
           bgColor: color,
@@ -55,12 +50,6 @@ export const parseCalendarInfo = (type: string, calendar: any): ISchedule[] => {
           end: item.end?.dateTime || item.end?.date
         }
         parseSchedule.push(_p)
-        if (
-          item?.start.dateTime &&
-          item?.start?.dateTime.includes('2021-12') &&
-          calendar.summary == 'kishan@oizom.com'
-        )
-          console.log(_p, item.start.dateTime, item.summary)
       }
     })
 

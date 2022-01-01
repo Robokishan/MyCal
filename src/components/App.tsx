@@ -127,7 +127,6 @@ function App() {
   }
 
   useEffect(() => {
-    console.log('data', data)
     if (data && data.length > 0) {
       const calenders = [] as ISchedule[]
       data &&
